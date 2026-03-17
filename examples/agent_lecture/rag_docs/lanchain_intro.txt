@@ -1,0 +1,3 @@
+Langchain är ett ramverk för att bygga LLM-applikationer.
+Det används ofta för kedjor, agenter, verktyg och retrival-baserade arbetsflöden. 
+En agent kan välja när ett verktyg ska användas istället för att bara generera text direkt. 

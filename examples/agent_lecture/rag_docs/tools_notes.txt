@@ -1,0 +1,3 @@
+Ett toll i LanChain är en funktion som agenten kan anropa för att utföra en specifik uppgift. 
+Vanliga exempel är webbförfrågningar, databassökningar, kalkylatorer och kodexekvering. 
+En bra systemprompt ska förklara när verktyget ska användas och när agent ska avstå från att gissa. 

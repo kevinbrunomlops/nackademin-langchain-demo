@@ -1,0 +1,4 @@
+RAG står för Retrieval-Augmented Generation.
+Grundiden är att modellen först hämtar relevant information från en extern kunskapskälla.
+Därefter genereras svaret utifrån det hämtade underlaget.
+Det minskar risken för hallucinationer jämfört med att bara lite på modellens interna kunskap. 
