@@ -41,5 +41,5 @@ OLLAMA_BEARER_TOKEN=your-bearer-token-here
 Run from project root:
 
 ```bash
-uv run python3 -m examples.agent-lecture.agent_of_your_chose
+uv run python3 -m examples.agent-lecture.agent_of_your_choice
 ```
