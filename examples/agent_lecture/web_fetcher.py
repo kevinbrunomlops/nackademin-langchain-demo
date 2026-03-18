@@ -35,7 +35,7 @@ Output format:
 """.strip()
 
 def run():
-    model = get_model
+    model = get_model()
     tools = RequestsToolkit(
         requests_wrapper=TextRequestsWrapper(headers={}),
         allow_dangerous_requests=True, 
@@ -56,7 +56,7 @@ def run():
 
     handle_stream(process_stream)
 
-if __name__ == "__name__":
+if __name__ == "__main__":
     run()
 
 
