@@ -43,3 +43,27 @@ Run from project root:
 ```bash
 uv run python3 -m examples.agent_lecture.agent_of_your_choice
 ```
+
+### Short summary about the agents
+#### Agent with memory 
+This agent can have a coherent conversation by remembering previous messages in the same session. It uses a short-term memory (`InMemorySaver`) and a `thread_id` to connect the dialogue, which makes it able to answer follow up questions and refer to previous information.
+
+Use case: 
+Good for dialogues, chatbots and interactive assistents. 
+
+#### RAG-Agent (Retrieval-Augmented Generation)
+This agent get's information from local documents and uses it as it main source to answer questions. It builds vector databases (FAISS) of the documents and searches for relevant parts when the user asks a question. 
+
+Use case:
+Perfect when you want an agent that answers on specific material and not in genereal terms.
+
+#### Web fetcher agent
+This agent can get information from the web by:
+1. Search after relevant web pages. 
+2. Get information 
+3. Base the answer on the information it got from the web. 
+
+It is designed not to guess or make up information, but only to use what is actually available on the web. 
+
+Use case: 
+Good for topical issues or when information is not available locally. 
