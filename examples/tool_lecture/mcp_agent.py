@@ -6,8 +6,7 @@ from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain.agents.middleware import wrap_tool_call
 
 from util.models import get_model
-from util.streaming_utils import STREAM_MODES, handle_stream_async
-from util.pretty_print import print_mcp_tools, get_user_input
+from util.pretty_print import get_user_input
 
 @wrap_tool_call
 async def simplify_tool_output(request, handler):
@@ -16,9 +15,9 @@ async def simplify_tool_output(request, handler):
     if isinstance(result, dict):
         if "priority" in result:
             return (
-                f"Uppgift: {result.get('task_name')}, "
-                f"prioritet: {result.get['priority']}, "
-                f"score: {result.get('score')}"
+                f"Uppgift: {result.get('task_name')}. "
+                f"Prioritet: {result.get('priority')}. "
+                f"Poäng: {result.get('score')}. "
             )
         
         if "sessions_needed" in result:
@@ -32,6 +31,7 @@ async def simplify_tool_output(request, handler):
                 f"Risknivå: {result.get('risk_level')}. "
                 f"Kommentar: {result.get('warning')}"
                 )
+        
     return result 
 
 async def run_async():
@@ -68,7 +68,9 @@ async def run_async():
             Du är en studieassistent som hjälper användaren att planera studier och uppgifter. 
             
             Regler: 
+            - Vid allmäna frågor som "Hur kan du hjälpa mig idag" eller "Jag behöver hjälp med studierna", svara direkt i vanlig svensk text.
             - Använd inte verktyg direkt om användarens fråga är vag eller allmän.
+            - Skriv aldrig JSON, toll-call-format eller påhittade funktionsansrop i svaret. 
             - Om användaren skriver något brett, som "Jag behöver hjälp med studierna", börja med att förklara vilken typ av hjälp du kan ge.
             - Använd verktyg först när användaren har gett tillräckligt med information, till exempel deadline, antal timmar, svårighetsgrad eller typ av uppgift.
             - Hitta aldrig på siffror eller detaljer som användaren inte gett. 
@@ -86,16 +88,14 @@ async def run_async():
             {"messages": [{"role": "user", "content": user_input}]}
         )
         print("\nSvar:")
-        print(result["messages"][-1].content)
 
-    # Call the agent
-    process_stream = agent.astream(
-        {"messages": [{"role": "user", "content": user_input}]},
-        stream_mode=STREAM_MODES,
-    )
-
-    # Stream the process
-    await handle_stream_async(process_stream)
+        messages = result.get("messages", [])
+        if messages:
+            last_message = messages[-1]
+            content = getattr(last_message, "content", "")
+            print(content if content else "Jag kunde inte formulera ett svar")
+        else:
+            print("Inget svar returnerades från agenten.")
 
 
 def run():
