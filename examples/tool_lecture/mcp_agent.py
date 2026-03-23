@@ -23,11 +23,15 @@ async def simplify_tool_output(request, handler):
         
         if "sessions_needed" in result:
             return (
-                f"Antal studiesessioner som behövs: "
-                f"{result.get('sessions_needed')}"
+                f"Uppgift: {result.get('task_name')}. "
+                f"Behöver ungefär {result.get('sessions_needed')} studiesessioner."
             )
-        if "warning" in result:
-            return f"Riskbedömning: {result.get('warning')}"
+        if "risk_level" in result:
+            return (
+                f"Uppgift: {result.get('task_name')}. "
+                f"Risknivå: {result.get('risk_level')}. "
+                f"Kommentar: {result.get('warning')}"
+                )
     return result 
 
 async def run_async():
@@ -49,24 +53,40 @@ async def run_async():
 
     allowed_tool_names = {
         "prioritize_task",
-        "estimate_study_sessions"
-        "risk_check_deadline"
+        "estimate_study_sessions",
+        "risk_check_deadline",
     }
     filtered_tools = [tool for tool in tools if tool.name in allowed_tool_names]
-    print_mcp_tools(filtered_tools)
+    
 
     # Create agent
     agent = create_agent(
         model=model,
-        tools=tools,
-        system_prompt=(
-            "Du är en hjälpsam assistent som svarar på användarens frågor. "
-            "Svara alltid på svenska och var koncis men informativ."
-        ),
+        tools=filtered_tools,
+        middleware=[simplify_tool_output],
+        system_prompt=""" 
+            Du är en studieassistent som hjälper användaren att planera studier och uppgifter. 
+            
+            Regler: 
+            - Använd inte verktyg direkt om användarens fråga är vag eller allmän.
+            - Om användaren skriver något brett, som "Jag behöver hjälp med studierna", börja med att förklara vilken typ av hjälp du kan ge.
+            - Använd verktyg först när användaren har gett tillräckligt med information, till exempel deadline, antal timmar, svårighetsgrad eller typ av uppgift.
+            - Hitta aldrig på siffror eller detaljer som användaren inte gett. 
+            - När ett verktyg används, sammanfatta resultatet naturligt och kortfattat på svenska. 
+            - Undvik tekniska eller konstiga formuleringar. 
+            
+        """
     )
-
-    # Get user input
-    user_input = get_user_input("Ställ din fråga")
+    while True:
+        user_input = get_user_input("Ställ din fråga: ").strip()
+        if user_input.lower() in {"exit", "quit"}:
+            break
+        
+        result = await agent.ainvoke(
+            {"messages": [{"role": "user", "content": user_input}]}
+        )
+        print("\nSvar:")
+        print(result["messages"][-1].content)
 
     # Call the agent
     process_stream = agent.astream(
