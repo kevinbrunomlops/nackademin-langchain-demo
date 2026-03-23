@@ -9,6 +9,7 @@ dependencies = [
     "faiss-cpu>=1.13.2",
     "langchain>=1.2.12",
     "langchain-community>=0.4.1",
+    "langchain-mcp-adapters>=0.2.2",
     "langchain-ollama>=1.0.1",
     "python-dotenv>=1.2.2",
     "requests>=2.32.5",
